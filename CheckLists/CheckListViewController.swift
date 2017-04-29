@@ -13,6 +13,8 @@ class CheckListViewController: UITableViewController, addItemProtocol{
     var items: [CheckListItem]!
     var categories: [CategoryItem]!
     var categoryIndex:Int!
+    var deleteItemIndexPath: IndexPath?
+
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -119,28 +121,35 @@ class CheckListViewController: UITableViewController, addItemProtocol{
         categories[categoryIndex].items = items
         Utiles.saveCategoryItem(for: categories)
     }
-
     
-//    func saveCheckListItemData(){
-//        let data = NSMutableData()
-//        let archiver = NSKeyedArchiver(forWritingWith: data)
-//        archiver.encode(items, forKey: ")
-//        archiver.finishEncoding()
-//        data.write(to: CategoryKeys.ArchiveUrl, atomically: true)
-//    }
-//    
-//
-//    func loadCheckListItemData(){
-//        
-//        if let data = try? Data(contentsOf: CategoryKeys.ArchiveUrl){
-//            let unarchiver = NSKeyedUnarchiver(forReadingWith: data)
-//            if let unArchivedItems = unarchiver.decodeObject(forKey: String(describing: subCategory)){
-//             items = unArchivedItems as! [CheckListItem]
-//            }
-//            unarchiver.finishDecoding()
-//        }
-//    }
- 
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete{
+            deleteItemIndexPath = indexPath
+            let deletedItem = items[indexPath.row]
+            confirmDelete(deletedItem)
+        }
+    }
+    
+    func confirmDelete(_ checkListItem: CheckListItem){
+        let alert = UIAlertController(title: "Delete Item", message: "Are you sure you want to permanently delete \(checkListItem.text)?", preferredStyle: .actionSheet)
+        let deleteAction = UIAlertAction(title: "Delete",style: .destructive, handler: permanentlyDelete)
+        let cancelAction = UIAlertAction(title: "Cancel",style: .cancel, handler: nil)
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func permanentlyDelete(_ sender: UIAlertAction){
+        if let indexPath = deleteItemIndexPath{
+            tableView.beginUpdates()
+            items.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            tableView.endUpdates()
+            saveItemsInDictionary()
+        }
+    }
+
     
     
 }

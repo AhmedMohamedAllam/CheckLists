@@ -81,7 +81,6 @@ protocol addItemProtocol : class
     func addItemViewControlerDidCancel(_ controler: AddItemViewController)
     func addItemViewControler(_ controler: AddItemViewController, didFinishAdding item: CheckListItem)
     func addItemViewControler(_ controler: AddItemViewController, didFinishEditing item: CheckListItem)
-
 }
 
 

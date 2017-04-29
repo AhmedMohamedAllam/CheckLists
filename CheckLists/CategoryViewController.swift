@@ -8,9 +8,10 @@
 
 import UIKit
 
-class CategoryViewController: UITableViewController, AddCategoryProtocol{
+class CategoryViewController: UITableViewController, AddCategoryProtocol, UIWebViewDelegate{
 
     var categories:[CategoryItem]
+    var deleteCategoryIndexPath: IndexPath?
     
     required init?(coder aDecoder: NSCoder) {
         categories = [CategoryItem]()
@@ -97,6 +98,33 @@ class CategoryViewController: UITableViewController, AddCategoryProtocol{
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.backgroundColor = .clear
          cell.backgroundColor = UIColor(white: 1, alpha: 0.5)
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete{
+            deleteCategoryIndexPath = indexPath
+            let categoryItem = categories[indexPath.row]
+            confirmDelete(categoryItem)
+        }
+    }
+    
+    func confirmDelete(_ categoryItem: CategoryItem){
+        let alert = UIAlertController(title: "Delete Category", message: "Are you sure you want to permanently delete \(categoryItem.title)?", preferredStyle: .actionSheet)
+        let deleteAction = UIAlertAction(title: "Delete",style: .destructive, handler: permanentlyDelete)
+        let cancelAction = UIAlertAction(title: "Cancel",style: .cancel, handler: nil)
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func permanentlyDelete(_ sender: UIAlertAction){
+        if let indexPath = deleteCategoryIndexPath{
+            tableView.beginUpdates()
+            categories.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            tableView.endUpdates()
+            Utiles.saveCategoryItem(for: categories)
+        }
     }
     
    

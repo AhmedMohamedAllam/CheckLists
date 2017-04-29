@@ -9,20 +9,15 @@
 import UIKit
 
 class AddCategoryViewController: UITableViewController {
-    @IBOutlet weak var editTextField: UITextField!
+    
+    @IBOutlet weak var addCategoryTextField: UITextField!
     @IBOutlet weak var addIconButton: UIButton!
+    
     var delegate: AddCategoryProtocol!
     var editingCategory: CategoryItem!
     var newCategory = CategoryItem()
-    var categorySelectedIcon: UIImage?
-
-    @IBOutlet weak var addCategoryTextField: UITextField!
-
-
-    override func viewDidLoad() {
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 150
-    }
+    
+    
     override func viewWillAppear(_ animated: Bool) {
         addCategoryTextField.becomeFirstResponder()
         
@@ -33,22 +28,17 @@ class AddCategoryViewController: UITableViewController {
             }else{
                 addIconButton.setBackgroundImage(editingCategory.icon, for: UIControlState.normal)
             }
-            
             navigationItem.title = "Edit category"
-            editTextField.placeholder = "Edit category"
-            editTextField.text = editingCategory.title
-        }
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        if let icon = categorySelectedIcon{
-            if let c_item = editingCategory{
-                c_item.icon = icon
+            addCategoryTextField.placeholder = "Edit category"
+            addCategoryTextField.text = editingCategory.title
+        }else{
+            if newCategory.icon == #imageLiteral(resourceName: "No Icon"){
+                addIconButton.setBackgroundImage(#imageLiteral(resourceName: "addIcon"), for: UIControlState.normal)
             }else{
-                newCategory.icon = icon
+                addIconButton.setBackgroundImage(newCategory.icon, for: UIControlState.normal)
             }
-            addIconButton.setBackgroundImage(icon, for: UIControlState.normal)
         }
+
     }
     
     
@@ -56,13 +46,10 @@ class AddCategoryViewController: UITableViewController {
         if segue.identifier == "AddIconSegue"{
             let controller = segue.destination as! AddIconViewController
             if let item = editingCategory{
-                controller.objectType = "edit item"
-                controller.Category = item
+                controller.categoryItem = item
             }else{
-                controller.objectType = "new item"
-                controller.Category = newCategory
+                controller.categoryItem = newCategory
             }
-            controller.delegate = delegate
         }
     }
 

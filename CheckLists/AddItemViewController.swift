@@ -29,6 +29,11 @@ class AddItemViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         addItemTextField.becomeFirstResponder()
+        if let addItemEditing = addItemEditing{
+            navigationItem.title = "Edit item"
+            addItemTextField.placeholder = "Edit (\(addItemEditing.text)) title"
+            addItemTextField.text = addItemEditing.text
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,13 +51,10 @@ class AddItemViewController: UITableViewController {
         return 1
     }
     
-    
-
 
     @IBAction func cancel(_ sender: Any) {
         delegate.addItemViewControlerDidCancel(self)
     }
-    
     
     
     @IBAction func done(_ sender: Any) {
